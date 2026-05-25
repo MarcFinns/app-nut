@@ -7,21 +7,22 @@ FROM base AS builder
 ARG NUT_VERSION=2.8.5
 
 # Setup builder
+# hadolint ignore=DL3008
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
-        autoconf=2.72-3.1 \
-        automake=1:1.17-4 \
-        build-essential=12.12 \
-        libhidapi-dev=0.14.0-1+b2 \
-        libltdl-dev=2.5.4-4 \
-        libmodbus-dev=3.1.11-2 \
-        libsnmp-dev=5.9.4+dfsg-2+deb13u1 \
-        libssl-dev=3.5.5-1~deb13u2 \
-        libusb-1.0-0-dev=2:1.0.28-1 \
-        libxml2-dev=2.12.7+dfsg+really2.9.14-2.1+deb13u2 \
-        libtool=2.5.4-4 \
-        pkg-config=1.8.1-4 \
+        autoconf \
+        automake \
+        build-essential \
+        libhidapi-dev \
+        libltdl-dev \
+        libmodbus-dev \
+        libsnmp-dev \
+        libssl-dev \
+        libusb-1.0-0-dev \
+        libxml2-dev \
+        libtool \
+        pkg-config \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -50,14 +51,15 @@ COPY rootfs /
 COPY --from=builder /app /
 
 # Setup app
+# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        libhidapi-hidraw0=0.14.0-1+b2 \
-        libmodbus5=3.1.11-2 \
-        libsnmp40t64=5.9.4+dfsg-2+deb13u1 \
-        libusb-1.0-0=2:1.0.28-1 \
-        libxml2=2.12.7+dfsg+really2.9.14-2.1+deb13u2 \
-        usbutils=1:018-2 \
+        libhidapi-hidraw0 \
+        libmodbus5 \
+        libsnmp40t64 \
+        libusb-1.0-0 \
+        libxml2 \
+        usbutils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
