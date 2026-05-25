@@ -194,6 +194,43 @@ When this option is set to `true` on a UPS shutdown command, the host system
 will be shutdown. When set to `false` only the app will be stopped. This is to
 allow testing without impact to the system.
 
+### Option: `ups_power_cycle_on_shutdown`
+
+When this option is set to `true`, the app will command the UPS to cut and
+restore its output as part of the shutdown sequence. This enables fully
+unattended recovery: after a power outage the UPS will automatically restore
+power to the host, which can then boot on its own via the BIOS/UEFI
+"power on after AC restore" setting.
+
+This option only has effect when `shutdown_host` is also set to `true`.
+
+**How it works:** when NUT determines a shutdown is required, it sets an
+internal flag (`POWERDOWNFLAG`) and calls the shutdown command. With this
+option enabled, the app detects that flag and runs `upsdrvctl shutdown` before
+handing off to the host shutdown. This tells the UPS driver to cut output after
+a configurable delay (`offdelay`), then restore it once AC power is available
+(`ondelay`).
+
+**Requirements:**
+
+- Your UPS must support the `offdelay` and `ondelay` driver parameters. These
+  are set under `devices[n].config` in the app configuration. Example:
+  ```yaml
+  config:
+    - offdelay = 120
+    - ondelay = 180
+  ```
+- `offdelay` must be long enough for the host to complete its shutdown before
+  the UPS cuts output. 120 seconds is a safe value for most systems.
+- `ondelay` must be greater than `offdelay` to ensure the UPS output has fully
+  cycled before it is restored.
+- The host BIOS/UEFI must have "power on after AC restore" (or equivalent)
+  enabled so the machine boots automatically when the UPS restores power.
+
+**Note**: _Without this option, the UPS output will not cycle during a shutdown,
+and the host will not reboot automatically after a power outage — even if
+`offdelay` and `ondelay` are configured._
+
 ### Option: `list_usb_devices`
 
 When this option is set to `true`, a list of connected USB devices will be

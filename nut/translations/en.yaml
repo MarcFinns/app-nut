@@ -1,0 +1,104 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: Controls the verbosity of app logging. Use 'info' normally, 'debug' when troubleshooting.
+  users:
+    name: Users
+    description: List of NUT users with their credentials and permissions.
+    fields:
+      username:
+        name: Username
+        description: Login name for this NUT user. Only letters, numbers and underscores allowed.
+      password:
+        name: Password
+        description: Password for this NUT user.
+      instcmds:
+        name: Instant commands
+        description: UPS instant commands this user may issue. Use 'all' to grant everything.
+      actions:
+        name: Actions
+        description: >-
+          Actions this user may perform. 'set' allows changing UPS variables;
+          'fsd' allows triggering a forced shutdown.
+      upsmon:
+        name: upsmon role
+        description: >-
+          Set to 'primary' for the host directly connected to the UPS.
+          Set to 'secondary' for remote hosts that shut down first.
+  devices:
+    name: UPS devices
+    description: List of UPS devices connected to this system.
+    fields:
+      name:
+        name: Name
+        description: Unique identifier for this UPS. No spaces or the word 'default'.
+      driver:
+        name: Driver
+        description: NUT driver for this UPS model. Use 'usbhid-ups' for most USB devices.
+      port:
+        name: Port
+        description: Device port. Use 'auto' to detect automatically, or a path like '/dev/ttyS0'.
+      powervalue:
+        name: Power value
+        description: >-
+          Set to 1 if this UPS powers this host (triggers shutdown on critical battery).
+          Set to 0 to monitor only without triggering shutdown.
+      config:
+        name: Extra driver config
+        description: >-
+          Additional driver options as 'key = value' strings. Common options include
+          'offdelay' (seconds before UPS cuts output) and 'ondelay' (seconds before
+          UPS restores output after AC returns).
+  mode:
+    name: Mode
+    description: >-
+      'netserver' manages a locally connected UPS and exposes it to other clients.
+      'netclient' connects to a remote NUT server as a secondary monitor.
+  shutdown_host:
+    name: Shut down host on UPS critical
+    description: >-
+      When enabled, the host system shuts down when the UPS reaches a critical state.
+      When disabled, only the app stops — useful for testing without affecting the system.
+  ups_power_cycle_on_shutdown:
+    name: Power cycle UPS output on shutdown
+    description: >-
+      When enabled, the UPS output is commanded to switch off and back on as part of
+      the shutdown sequence. This allows the host to reboot automatically after a
+      power outage once AC is restored. Requires 'Shut down host on UPS critical' to
+      also be enabled. Your UPS must support 'offdelay' and 'ondelay' driver parameters,
+      and the host BIOS/UEFI must have 'power on after AC restore' enabled.
+  list_usb_devices:
+    name: List USB devices at startup
+    description: Logs all connected USB devices when the app starts. Useful for identifying multiple UPS devices.
+  remote_ups_name:
+    name: Remote UPS name
+    description: Name of the UPS on the remote NUT server. Only used in 'netclient' mode.
+  remote_ups_host:
+    name: Remote UPS host
+    description: Hostname or IP address of the remote NUT server. Only used in 'netclient' mode.
+  remote_ups_user:
+    name: Remote UPS user
+    description: Username to authenticate with the remote NUT server. Only used in 'netclient' mode.
+  remote_ups_password:
+    name: Remote UPS password
+    description: Password to authenticate with the remote NUT server. Only used in 'netclient' mode.
+  upsd_maxage:
+    name: upsd MAXAGE
+    description: >-
+      Maximum seconds upsd will wait for a driver update before considering it stale.
+      Only change this if a specific driver requires it.
+  upsmon_deadtime:
+    name: upsmon DEADTIME
+    description: >-
+      Seconds upsmon waits before declaring an unresponsive UPS dead.
+      Only change this if your polling intervals require it.
+  i_like_to_be_pwned:
+    name: Bypass HaveIBeenPwned password check
+    description: Allows weak or previously-leaked passwords. Strongly discouraged — use a strong password instead.
+  leave_front_door_open:
+    name: Disable NUT server authentication
+    description: Allows unauthenticated access to the NUT server. Strongly discouraged even on private networks.
+
+network:
+  3493/tcp: Network UPS Tools server port

@@ -33,6 +33,7 @@ options:
       config: []
   mode: netserver
   shutdown_host: "false"
+  ups_power_cycle_on_shutdown: "false"
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   users:
@@ -52,6 +53,7 @@ schema:
         - str
   mode: list(netserver|netclient)
   shutdown_host: bool
+  ups_power_cycle_on_shutdown: bool?
   list_usb_devices: bool?
   remote_ups_name: str?
   remote_ups_host: str?

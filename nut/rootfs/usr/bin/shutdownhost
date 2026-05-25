@@ -4,14 +4,19 @@
 # Script to shutdown the host from UPS Shutdown Command
 # ==============================================================================
 
-# If upsmon set the POWERDOWNFLAG, command the UPS to cycle its output before
-# the host shuts down. upsdrvctl shutdown starts the UPS offdelay countdown;
-# the host must complete its shutdown within that window (offdelay seconds).
-# Without this step the UPS output never cuts, so the host never receives a
-# power-restore event and will not reboot after a power outage.
-if upsmon -K; then
-    bashio::log.warning "POWERDOWNFLAG detected — commanding UPS output shutdown via upsdrvctl..."
-    upsdrvctl shutdown
+# If ups_power_cycle_on_shutdown is enabled and upsmon has set the
+# POWERDOWNFLAG, command the UPS to cycle its output before the host shuts
+# down. upsdrvctl shutdown starts the UPS offdelay countdown; the host must
+# complete its shutdown within that window (offdelay seconds). Without this
+# step the UPS output never cuts, so the host never receives a power-restore
+# event and will not reboot automatically after a power outage.
+if bashio::config.true 'ups_power_cycle_on_shutdown'; then
+    if upsmon -K; then
+        bashio::log.warning "POWERDOWNFLAG detected — commanding UPS output shutdown via upsdrvctl..."
+        upsdrvctl shutdown
+    else
+        bashio::log.warning "ups_power_cycle_on_shutdown is enabled but POWERDOWNFLAG is not set — skipping UPS output shutdown."
+    fi
 fi
 
 bashio::host.shutdown
