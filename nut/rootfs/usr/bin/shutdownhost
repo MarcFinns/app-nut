@@ -3,4 +3,15 @@
 # Home Assistant Community App: Network UPS Tools
 # Script to shutdown the host from UPS Shutdown Command
 # ==============================================================================
+
+# If upsmon set the POWERDOWNFLAG, command the UPS to cycle its output before
+# the host shuts down. upsdrvctl shutdown starts the UPS offdelay countdown;
+# the host must complete its shutdown within that window (offdelay seconds).
+# Without this step the UPS output never cuts, so the host never receives a
+# power-restore event and will not reboot after a power outage.
+if upsmon -K; then
+    bashio::log.warning "POWERDOWNFLAG detected — commanding UPS output shutdown via upsdrvctl..."
+    upsdrvctl shutdown
+fi
+
 bashio::host.shutdown
