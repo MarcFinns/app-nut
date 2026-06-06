@@ -14,6 +14,11 @@ if bashio::config.true 'ups_power_cycle_on_shutdown'; then
     if upsmon -K; then
         bashio::log.warning "POWERDOWNFLAG detected — commanding UPS output shutdown via upsdrvctl..."
         upsdrvctl shutdown
+        rc=$?
+        if [ "${rc}" -ne 0 ]; then
+            bashio::log.error \
+                "upsdrvctl shutdown failed (exit ${rc}) — UPS output will not cycle; continuing with host shutdown."
+        fi
     else
         bashio::log.warning "ups_power_cycle_on_shutdown is enabled but POWERDOWNFLAG is not set — skipping UPS output shutdown."
     fi
